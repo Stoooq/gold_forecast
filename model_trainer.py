@@ -10,7 +10,9 @@ class ModelTrainer:
         self.optimizer = optimizer
         self.device = device
         self.train_loss_history = []
+        self.train_acc_history = []
         self.val_loss_history = []
+        self.val_acc_history = []
 
     def train_epoch(self, train_loader) -> float:
         self.model.train()
@@ -226,7 +228,7 @@ class ModelTrainer:
         
         ax.set_xlabel("Sample Index", fontsize=12)
         ax.set_ylabel("Gold Price (USD)" if scaler else "Normalized Value", fontsize=12)
-        ax.set_title("Gold Price: Actual vs Predicted (Use toolbar to zoom/pan)", fontsize=14, fontweight="bold")
+        ax.set_title("Gold Price: Actual vs Predicted", fontsize=14, fontweight="bold")
         ax.legend(fontsize=11, loc='best')
         ax.grid(True, alpha=0.3)
         

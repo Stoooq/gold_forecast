@@ -33,6 +33,8 @@ class DataPreparator:
         if row_NaN < 0.1 * len(df):
             df = df.dropna(axis=0)
 
+        df['log_return'] = np.log(df['Close'] / df['Close'].shift(1))
+
         return df
 
     def fit_scaler(self, data: np.ndarray, scaler_type: str = "minmax") -> None:
