@@ -1,0 +1,32 @@
+experiment:
+  name: "lstm_run_01"
+  seed: 42
+
+data:
+  csv_path: "/Users/miloszglowacki/Desktop/code/python/stock_forecast/datasets/gold.csv"
+  target_col: "Close"
+  exclude_cols: ['Date', 'Currency']
+  no_scale_cols: ['log_return', 'log_volume']
+  scaler_type: "minmax"
+  window_size: 30
+  batch_size: 64
+  split:
+    train: 0.7
+    val: 0.15
+    test: 0.15
+
+model:
+  type: "lstm"
+  input_size: 1
+  hidden_size: 64
+  num_layers: 2
+
+training:
+  epochs: 30
+  learning_rate: 0.001
+  optimizer: "adam"
+  device: "cpu"
+  grad_clip: 1.0
+  save_dir: "artifacts/models"
+
+evaluation:
