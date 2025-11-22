@@ -2,14 +2,23 @@ import torch
 import torch.nn as nn
 
 class Checkpointer:
-    def __init__(self, path):
-        self.path = path
+    def __init__(self, cfg):
+        self.cfg = cfg
 
-    def save_checkpoint(self, model: nn.Module, name: str) -> None:
-        path = f"{self.path}/{name}"
-        torch.save(model, path)
+    def save_checkpoint(self, epoch: str, model: nn.Module, optimizer) -> None:
+        checkpoint = {
+            "epoch": epoch,
+            "model_state_dict": model.state_dict(),
+            "optimizer_state_dict": optimizer.state_dict(),
+            # "metrics": metrics or {},
+            # "config": config or {},
+            # "timestamp": datetime.now().isoformat()
+        }
 
-    def load_checkpoint(self, name: str, weights_only: bool = True) -> nn.Module:
-        path = f"{self.path}/{name}"
+        path = f"{self.cfg.save_dir}/{self.cfg.name}"
+        torch.save(checkpoint, path)
+
+    def load_checkpoint(self, weights_only: bool = True) -> nn.Module:
+        path = f"{self.cfg.save_dir}/{self.cfg.name}"
         model = torch.load(path, weights_only=weights_only)
         return model

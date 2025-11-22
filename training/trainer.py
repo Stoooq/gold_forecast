@@ -1,12 +1,18 @@
 import torch
 from tqdm import tqdm
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from training.checkpointer import Checkpointer
 
 class Trainer:
-    def __init__(self, model, loss_fn, optimizer, cfg):
+    def __init__(self, model, loss_fn, optimizer, cfg, checkpointer: Optional["Checkpointer"] = None, start_epoch: Optional[int] = 0):
         self.model = model
         self.loss_fn = loss_fn
         self.optimizer = optimizer
         self.cfg = cfg
+        self.checkpointer = checkpointer
+        self.start_epoch = start_epoch
 
     def _train_epoch(self, train_loader) -> float:
         self.model.train()
@@ -48,12 +54,25 @@ class Trainer:
     def train(self, train_loader, val_loader=None):
         history = {"train_loss": [], "val_loss": []}
 
-        for epoch in tqdm(range(self.cfg.epochs)):
+        progress_bar = tqdm(range(self.start_epoch, self.cfg.epochs))
+
+        for epoch in progress_bar:
+            progress_bar.set_description(f"Epoch {epoch + 1}")
+
             train_loss = self._train_epoch(train_loader)
             history["train_loss"].append(train_loss)
 
             if val_loader is not None:
                 val_loss = self._validate_epoch(val_loader)
                 history["val_loss"].append(val_loss)
+
+            if self.checkpointer:
+                self.checkpointer.save_checkpoint(epoch, self.model, self.optimizer)
+
+            metrics = {"train_loss": f"{train_loss}"}
+            if val_loss is not None:
+                metrics["val_loss"] = f"{val_loss}"
+
+            progress_bar.set_postfix(metrics)
 
         return history

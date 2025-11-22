@@ -28,5 +28,6 @@ training:
   device: "cpu"
   grad_clip: 1.0
   save_dir: "artifacts/models"
+  name: "lstm_01"
 
 evaluation:

@@ -4,6 +4,7 @@ import torch.nn as nn
 from utils.config import Config
 from data.data_module import DataModule
 from models.model import MyModel
+from training.checkpointer import Checkpointer
 from training.trainer import Trainer
 from evaluation.evaluator import Evaluator
 from viz.visualizer import Visualizer
@@ -16,7 +17,9 @@ train_loader, val_loader, test_loader, scaler = data_module.get_loaders()
 
 model = MyModel(input_size=19, hidden_size=64, num_layers=1)
 
-trainer = Trainer(model, nn.MSELoss(), torch.optim.Adam(model.parameters(), lr=0.001), cfg.training)
+checkpointer = Checkpointer(cfg.training)
+
+trainer = Trainer(model, nn.MSELoss(), torch.optim.Adam(model.parameters(), lr=0.001), cfg.training, checkpointer)
 history = trainer.train(train_loader, val_loader)
 
 evaluator = Evaluator(model, cfg.training)
