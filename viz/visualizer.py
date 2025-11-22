@@ -1,13 +1,20 @@
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import pandas as pd
 
 class Visualizer:
     @staticmethod
-    def plot_preds(y_true, y_pred):
+    def plot_preds(y_true, y_pred, dates):
+        dates = pd.to_datetime(dates)
+
         plt.figure(figsize=(10,4))
-        plt.plot(y_true, label="true")
-        plt.plot(y_pred, label="pred")
+        plt.plot(dates, y_true, label="True", linewidth=1.5)
+        plt.plot(dates, y_pred, label="Predictions", linewidth=1.5, alpha=0.8)
+        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+        plt.gca().xaxis.set_major_locator(mdates.AutoDateLocator())
+        plt.gcf().autofmt_xdate()
         plt.legend()
-        plt.title("Cena: rzeczywista vs predykcja")
+        plt.title("Price: real vs predictions")
         plt.tight_layout()
         plt.show()
 

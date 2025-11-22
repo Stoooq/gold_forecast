@@ -13,17 +13,19 @@ cfg = Config("/Users/miloszglowacki/Desktop/code/python/stock_forecast/config/co
 device = cfg.device if torch.cuda.is_available() and cfg.device == "cuda" else "cpu"
 
 data_module = DataModule(cfg.data)
-train_loader, val_loader, test_loader, scaler = data_module.get_loaders()
+train_loader, val_loader, test_loader, scaler, test_dates = data_module.get_loaders()
 
 model = MyModel(input_size=19, hidden_size=64, num_layers=1)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+loss_fn = nn.MSELoss()
 
 checkpointer = Checkpointer(cfg.training)
 
-trainer = Trainer(model, nn.MSELoss(), torch.optim.Adam(model.parameters(), lr=0.001), cfg.training, checkpointer)
+trainer = Trainer(model, loss_fn, optimizer, cfg.training, checkpointer)
 history = trainer.train(train_loader, val_loader)
 
 evaluator = Evaluator(model, cfg.training)
 y, pred, res = evaluator.evaluate(test_loader)
 
 visualizer = Visualizer()
-visualizer.plot_preds(y, pred)
+visualizer.plot_preds(y, pred, test_dates)

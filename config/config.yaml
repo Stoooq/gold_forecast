@@ -22,12 +22,13 @@ model:
   num_layers: 2
 
 training:
-  epochs: 30
+  epochs: 100
   learning_rate: 0.001
   optimizer: "adam"
   device: "cpu"
   grad_clip: 1.0
   save_dir: "artifacts/models"
   name: "lstm_01"
+  resume_from_checkpoint: true
 
 evaluation:

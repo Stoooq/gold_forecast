@@ -6,13 +6,24 @@ if TYPE_CHECKING:
     from training.checkpointer import Checkpointer
 
 class Trainer:
-    def __init__(self, model, loss_fn, optimizer, cfg, checkpointer: Optional["Checkpointer"] = None, start_epoch: Optional[int] = 0):
+    def __init__(self, model, loss_fn, optimizer, cfg, checkpointer: Optional["Checkpointer"] = None):
         self.model = model
         self.loss_fn = loss_fn
         self.optimizer = optimizer
         self.cfg = cfg
         self.checkpointer = checkpointer
-        self.start_epoch = start_epoch
+        
+        self.start_epoch = 0
+
+        if self.cfg.resume_from_checkpoint and self.checkpointer:
+            self._resume_training()
+
+    def _resume_training(self):
+        checkpoint = self.checkpointer.load_checkpoint()
+
+        self.model.load_state_dict(checkpoint["model_state_dict"])
+        self.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+        self.start_epoch = checkpoint["epoch"] + 1
 
     def _train_epoch(self, train_loader) -> float:
         self.model.train()

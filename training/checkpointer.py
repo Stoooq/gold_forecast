@@ -15,10 +15,10 @@ class Checkpointer:
             # "timestamp": datetime.now().isoformat()
         }
 
-        path = f"{self.cfg.save_dir}/{self.cfg.name}"
+        path = f"{self.cfg.save_dir}/{self.cfg.name}.pt"
         torch.save(checkpoint, path)
 
-    def load_checkpoint(self, weights_only: bool = True) -> nn.Module:
-        path = f"{self.cfg.save_dir}/{self.cfg.name}"
-        model = torch.load(path, weights_only=weights_only)
-        return model
+    def load_checkpoint(self, weights_only: bool = False) -> nn.Module:
+        path = f"{self.cfg.save_dir}/{self.cfg.name}.pt"
+        checkpoint = torch.load(path, weights_only=weights_only)
+        return checkpoint

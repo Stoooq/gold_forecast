@@ -35,6 +35,10 @@ class DataModule:
             df[f"price_to_sma_{window}"] = df["Close"] / df[f"sma_{window}"]
 
         return df
+    
+    def get_dates(self, df: pd.DataFrame):
+        data_df = df["Date"]
+        return data_df[self.cfg.window_size:]
 
     def create_sequence(
         self, data: np.ndarray, target_col_idx: int = 0
@@ -98,9 +102,10 @@ class DataModule:
             col for col in feature_cols if col not in (self.cfg.no_scale_cols or [])
         ]
 
+        test_dates = self.get_dates(test_df)
+
         self.fit_scaler(train_df[scale_cols].values)
 
-        # df[scale_cols] = self.transform_data(df[scale_cols].values)
         train_arr = self.transform_data(train_df[scale_cols].values)
         val_arr = self.transform_data(val_df[scale_cols].values)
         test_arr = self.transform_data(test_df[scale_cols].values)
@@ -119,4 +124,4 @@ class DataModule:
         val_loader   = DataLoader(val_ds, batch_size=self.cfg.batch_size, shuffle=False)
         test_loader  = DataLoader(test_ds, batch_size=self.cfg.batch_size, shuffle=False)
 
-        return train_loader, val_loader, test_loader, self.scaler
+        return train_loader, val_loader, test_loader, self.scaler, test_dates
